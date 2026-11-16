@@ -2,3 +2,41 @@
 __pycache__/
 *.pyc
 *.log
+
+# Local environments and test output
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+.pytest_cache/
+coverage/
+playwright-report/
+test-results/
+
+# Editor and operating-system state
+.idea/
+.vscode/
+Thumbs.db
+
+# DayOrbit user data (keep real personal content outside the public repository)
+/灵感/
+/白板/
+/素材/
+/_迁移备份-*/
+
+# Private workspace rules and internal development documents
+/.obsidian/
+/.agents/
+/.codex/
+/AGENTS.md
+/CLAUDE.md
+/GEMINI.md
+/CONTRIBUTING.md
+/docs/
+/CHANGELOG*
+/HISTORY*
+/RELEASE_NOTES*
+/TODO*
+/PLAN*
+/MEMORY*

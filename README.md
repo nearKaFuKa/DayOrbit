@@ -136,7 +136,6 @@ Back up the whole folder. Browser `localStorage` is a local mirror used for resi
 - Workspace data stays in your selected folder and browser storage. DayOrbit has no telemetry or cloud sync.
 - The Python server binds to `127.0.0.1`, serves only allowlisted app files, and disables directory listing. It does not receive your workspace data.
 - Rich text uses a small formatting whitelist.
-- Keep personal data folders, environment files, logs, and private screenshots out of contributions. Use synthetic fixtures and screenshots.
 
 Review Markdown or JSON from untrusted sources before granting write access. DayOrbit is a personal local tool and is not designed as a sandbox for hostile files.
 
@@ -149,34 +148,6 @@ Review Markdown or JSON from untrusted sources before granting write access. Day
 - Windows has launch scripts and keyboard handling, with broader real-device testing still incomplete.
 - Direct `file://` use can display the app, but folder authorization is less reliable than localhost.
 
-## Under the hood
-
-DayOrbit has **no framework, build step, npm runtime dependency, or CDN**. The page talks directly to your chosen folder through the browser's File System Access API.
-
-<details>
-<summary>Architecture and development checks</summary>
-
-| Part | Role |
-| --- | --- |
-| `工作台.html` | Main UI, interactions, storage orchestration, and styles |
-| `src/workbench-core.js` | Pure data, layout, merge, validation, and sanitization helpers |
-| `src/workbench-window.js` | Single-editor-window coordination with Web Locks and a local lease fallback |
-| `src/workbench-server.py` | Loopback-only static server with an explicit file allowlist |
-| `tests/` | Node regression tests and optional Playwright browser checks |
-
-Run from the repository root:
-
-```bash
-node --check src/workbench-core.js
-node --check src/workbench-window.js
-node --test tests/workbench-core.test.js tests/workbench-window.test.js tests/workbench-storage.test.js
-node -e 'const h=require("fs").readFileSync("工作台.html","utf8");const m=h.match(/<script>([\s\S]*?)<\/script>/);if(!m)throw Error("inline script missing");new Function(m[1]);'
-```
-
-The Python scripts under `tests/` require Playwright and Chromium. They stay outside the dependency-free default path.
-
-</details>
-
 ## 中文说明
 
 **多个项目持续运转，每天聚焦当下。** DayOrbit 是一款面向独立开发者的轻量级多项目工作台：项目白板梳理每个项目，今日白板聚焦当天任务，灵感素材库沉淀可复用的想法和参考资料。同一任务在项目白板和今日白板中是同一条记录，无需重复维护。
@@ -187,9 +158,9 @@ macOS 运行 `scripts/start-macos.command`，Windows 双击 `scripts\start-windo
 
 当前界面以中文为主，不支持跨设备冲突解决。Windows 已具备启动脚本与代码级兼容，更多真实设备验收仍在进行中。
 
-## Contributing
+## Feedback
 
-Found a rough edge or have an idea? [Open an issue](https://github.com/nearKaFuKa/DayOrbit/issues) or read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a pull request. Use synthetic data in examples and screenshots.
+Questions or problems? [Open an issue](https://github.com/nearKaFuKa/DayOrbit/issues). Please use synthetic examples and keep personal workspace files, account details, and unredacted screenshots private.
 
 ## License
 
