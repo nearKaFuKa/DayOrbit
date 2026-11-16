@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">DayOrbit — Think across projects. Focus on today.</title>
+  <desc id="desc">A local-first multi-project workbench for indie developers. Two project cards connect to a focused Today card, illustrating how project thinking becomes daily action.</desc>
+  <rect width="1200" height="420" rx="24" fill="#f4f2ec"/>
+  <g id="brand" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <text x="60" y="62" fill="#4a4842" font-size="18" font-weight="600" letter-spacing="2">LOCAL-FIRST · MULTI-PROJECT</text>
+    <text x="55" y="172" fill="#1f1e1b" font-size="106" font-weight="700" letter-spacing="-5">DayOrbit</text>
+    <text x="60" y="243" fill="#1f1e1b" font-size="36" font-weight="500" letter-spacing="-1">Think across projects.</text>
+    <text x="60" y="289" fill="#3554d1" font-size="36" font-weight="600" letter-spacing="-1">Focus on today.</text>
+    <text x="60" y="364" fill="#4a4842" font-size="22">A calmer workspace for indie developers.</text>
+  </g>
+  <g id="project-connections" fill="none" stroke-width="2">
+    <path d="M804 150 C804 202 855 189 855 238" stroke="#a4aac0"/>
+    <path d="M1048 214 C1048 249 1000 207 1000 238" stroke="#a4aac0"/>
+    <path d="M1119 279 C1162 348 1095 387 1004 385" stroke="#d6d2c6" stroke-dasharray="5 7"/>
+    <circle cx="1004" cy="385" r="5" fill="#3554d1" stroke="none"/>
+  </g>
+  <g id="project-cards" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <rect x="699" y="54" width="221" height="96" rx="12" fill="#fff" stroke="#e4e1d8"/>
+    <circle cx="723" cy="81" r="4" fill="#3554d1"/>
+    <text x="738" y="87" fill="#4a4842" font-size="18" font-weight="600">PROJECT A</text>
+    <text x="720" y="122" fill="#1f1e1b" font-size="24" font-weight="500">Plan the release</text>
+    <rect x="942" y="118" width="216" height="96" rx="12" fill="#fff" stroke="#e4e1d8"/>
+    <circle cx="966" cy="145" r="4" fill="#3554d1"/>
+    <text x="981" y="151" fill="#4a4842" font-size="18" font-weight="600">PROJECT B</text>
+    <text x="963" y="186" fill="#1f1e1b" font-size="24" font-weight="500">Explore an idea</text>
+  </g>
+  <g id="daily-focus" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <rect x="752" y="240" width="360" height="116" rx="14" fill="#3554d1"/>
+    <circle cx="855" cy="240" r="5" fill="#3554d1"/>
+    <circle cx="1000" cy="240" r="5" fill="#3554d1"/>
+    <text x="780" y="275" fill="#fff" font-size="18" font-weight="600" letter-spacing="1.5">TODAY</text>
+    <text x="780" y="322" fill="#fff" font-size="32" font-weight="600" letter-spacing="-.6">One clear next step.</text>
+  </g>
+</svg>
