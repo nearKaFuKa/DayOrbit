@@ -1556,7 +1556,7 @@
 </div>
 
 <script src="src/workbench-window.js?v=20261115-single-editor"></script>
-<script src="src/workbench-core.js?v=20261114-topic-links"></script>
+<script src="src/workbench-core.js?v=20261116-tree-reflow"></script>
 <script>
 /* ================================================================
    存储层：Markdown + YAML frontmatter（Obsidian 兼容），落盘到所选文件夹
@@ -2308,6 +2308,7 @@ function deleteIdeaWithUndo(it){
     links = links.filter(L => L.f!==it.id && L.t!==it.id);
     saveLinks();
   }
+  if(topicBefore) reflowLinkedTopicCards(topicBefore, [it.id], false);
   mirrorLocal(); queueBoardIndex(); refreshAll();
   if(topicBefore){
     recordTopicHistory(topicBefore);
@@ -2400,6 +2401,7 @@ function deleteSelectedTopicCards(){
       Store.removeFile('灵感', `idea-${removed.id}.md`);
     }
   }
+  reflowLinkedTopicCards(before, result.removedCards.map(c => c.id), false);
   selectTopicCards([]);
   mirrorLocal(); queueBoardIndex(); refreshAll();
   if(Store.folderMode && days.size){
@@ -3412,13 +3414,16 @@ function renderIdea(it, canvas){
     el.classList.add('editing');
     ta.focus();
   });
-  const autoH = () => {
+  const autoH = (reflow = false) => {
     ta.style.height='auto';
     ta.style.height=ta.scrollHeight+'px';
     it._height = el.offsetHeight;
     it._width = el.offsetWidth;
     if(onDaily){ reflowKanban(); return; }
-    if(canvas === tboard && !it.temporary) avoidBelowInTopic(it); // 长文增高时局部避让下方卡
+    if(reflow && canvas === tboard && !it.temporary){
+      reflowLinkedTopicCards(editStart || topicSnapshot(), [it.id], true);
+      avoidBelowInTopic(it); // 自由摆放的卡片仍按原有规则避让
+    }
   };
   let saveTimer;
   let dirty=false;
@@ -3443,7 +3448,7 @@ function renderIdea(it, canvas){
         renderSideProjects();
       }
     }
-    it.text=ta.value; autoH();
+    it.text=ta.value; autoH(true);
     if(it.temporary && Core.normalizeText(it.text)){
       it.temporary=false;
       if(it._pendingParent != null){
@@ -5414,6 +5419,35 @@ function topicCanvasCards(b){
   const markHidden = id => { for(const k of (childrenOf.get(id)||[])){ hidden.add(k); markHidden(k); } };
   canvasCards.forEach(c => { if(c.tfold === true) markHidden(Number(c.id)); });
   return canvasCards.filter(c => !hidden.has(Number(c.id)));
+}
+function reflowLinkedTopicCards(before, changedIds, deferSave){
+  const b = boards.find(x=>x.id===curBoardId);
+  if(!b || isDevBoardObj(b)) return;
+  const vis = topicCanvasCards(b);
+  const involved = new Set([...vis.map(c=>Number(c.id)), ...changedIds.map(Number)]);
+  const beforeVisible = before.cards.filter(c=>involved.has(Number(c.id)));
+  const moves = Core.reflowLinkedTopicTrees(beforeVisible, before.links, vis, links, changedIds, {
+    heightOf: id => cardEl(id, tboard)?.offsetHeight || ideas.find(c=>Number(c.id)===Number(id))?._height || 140
+  });
+  if(!moves.size) return;
+  const days = new Set();
+  moves.forEach((y, id) => {
+    const card = ideas.find(c=>Number(c.id)===Number(id));
+    if(!card) return;
+    card.ty = y;
+    const el = cardEl(id, tboard);
+    if(el) el.style.top = y + 'px';
+    if(deferSave) topicAvoidPending.add(Number(id));
+    else {
+      Object.assign(card, Core.touchRecord(card));
+      days.add(card.date || todayStr());
+    }
+  });
+  renderTopicLinks();
+  if(!deferSave){
+    mirrorLocal(); queueBoardIndex();
+    if(Store.folderMode) runFolderSave(async () => { for(const ds of days) await persistDayFile(ds); });
+  }
 }
 function avoidBelowInTopic(it){
   const b = boards.find(x=>x.id===curBoardId);

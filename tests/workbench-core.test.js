@@ -375,6 +375,55 @@ test('layoutTopicTree: no heightOf keeps legacy numbers exactly', () => {
   assert.equal(positions.get(1).y, (40 + 204) / 2);
 });
 
+test('reflowLinkedTopicTrees adjusts both growth and shrink without moving free cards', () => {
+  const cards = [
+    { id: 1, tx: 40, ty: 252, created: '1' },
+    { id: 2, tx: 326, ty: 40, created: '2' },
+    { id: 3, tx: 326, ty: 464, created: '3' },
+    { id: 9, tx: 700, ty: 700, created: '9' }
+  ];
+  const links = [{ f: 1, t: 2 }, { f: 1, t: 3 }];
+  const tall = Core.reflowLinkedTopicTrees(cards, links, cards, links, [2], {
+    heightOf: id => id === 2 ? 500 : 140
+  });
+  assert.equal(tall.get(3), 564);
+  assert.equal(tall.has(9), false);
+  const grown = cards.map(c => ({ ...c, ty: tall.get(c.id) ?? c.ty }));
+  const short = Core.reflowLinkedTopicTrees(grown, links, grown, links, [2], {
+    heightOf: () => 140
+  });
+  assert.equal(short.get(3), 204);
+});
+
+test('reflowLinkedTopicTrees preserves manually arranged sibling order', () => {
+  const cards = [
+    { id: 1, tx: 40, ty: 122, created: '1' },
+    { id: 2, tx: 326, ty: 204, created: '2' },
+    { id: 3, tx: 326, ty: 40, created: '3' }
+  ];
+  const links = [{ f: 1, t: 2 }, { f: 1, t: 3 }];
+  const moved = Core.reflowLinkedTopicTrees(cards, links, cards, links, [3], {
+    heightOf: id => id === 3 ? 300 : 140
+  });
+  assert.equal(moved.get(3) ?? cards[2].ty, 40);
+  assert.equal(moved.get(2), 364);
+});
+
+test('reflowLinkedTopicTrees closes the gap after a linked card is deleted', () => {
+  const before = [
+    { id: 1, tx: 40, ty: 252, created: '1' },
+    { id: 2, tx: 326, ty: 40, created: '2' },
+    { id: 3, tx: 326, ty: 464, created: '3' },
+    { id: 9, tx: 700, ty: 700, created: '9' }
+  ];
+  const after = before.filter(c => c.id !== 2);
+  const moved = Core.reflowLinkedTopicTrees(before, [{ f: 1, t: 2 }, { f: 1, t: 3 }], after, [{ f: 1, t: 3 }], [2], {
+    heightOf: () => 140
+  });
+  assert.equal(moved.get(3), 40);
+  assert.equal(moved.has(9), false);
+});
+
 test('avoidOverlapDownTree pushes overlapped cards and their subtrees down, keeps others intact', () => {
   // 卡 1 被编辑为高 500；卡 2 同列在下方（会重叠），卡 2 有子卡 3；卡 8 在横向不相交处；卡 9 在编辑卡上方
   const cards = [

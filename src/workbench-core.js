@@ -1157,7 +1157,14 @@
     }
     const byId = new Map(cards.map((c) => [Number(c?.id), c]));
     const orderKey = (id) => `${byId.get(id)?.created || ''}\u0000${String(id).padStart(12, '0')}`;
-    for (const list of childrenOf.values()) list.sort((a, b) => (orderKey(a) < orderKey(b) ? -1 : 1));
+    const compareOrder = (a, b) => {
+      if(typeof opts.orderOf === 'function'){
+        const ay = Number(opts.orderOf(a)), by = Number(opts.orderOf(b));
+        if(Number.isFinite(ay) && Number.isFinite(by) && ay !== by) return ay - by;
+      }
+      return orderKey(a) < orderKey(b) ? -1 : 1;
+    };
+    for (const list of childrenOf.values()) list.sort(compareOrder);
 
     const terminates = (id) => {
       const seen = new Set();
@@ -1172,7 +1179,7 @@
     const roots = cards
       .map((c) => Number(c.id))
       .filter((id) => !parentOf.has(id) || !terminates(id))
-      .sort((a, b) => (orderKey(a) < orderKey(b) ? -1 : 1));
+      .sort(compareOrder);
 
     const folded = new Set(cards.filter((c) => c?.tfold === true).map((c) => Number(c.id)));
     const positions = new Map();
@@ -1203,6 +1210,53 @@
     };
     for (const r of roots) place(r, 0);
     return { positions, roots, childrenOf, folded };
+  }
+
+  function reflowLinkedTopicTrees(beforeCards = [], beforeLinks = [], cards = [], links = [], changedIds = [], opts = {}) {
+    // 只整理发生变化的连线树；保留卡片横坐标、树的原起点和自由卡位置。
+    const beforeById = new Map(beforeCards.map(c => [Number(c.id), c]));
+    const afterById = new Map(cards.map(c => [Number(c.id), c]));
+    const neighbors = new Map();
+    for (const link of beforeLinks) {
+      const f = Number(link.f), t = Number(link.t);
+      if (!beforeById.has(f) || !beforeById.has(t) || f === t) continue;
+      if (!neighbors.has(f)) neighbors.set(f, new Set());
+      if (!neighbors.has(t)) neighbors.set(t, new Set());
+      neighbors.get(f).add(t);
+      neighbors.get(t).add(f);
+    }
+    const seen = new Set();
+    const positions = new Map();
+    for (const changedId of changedIds) {
+      const start = Number(changedId);
+      if (seen.has(start) || !neighbors.has(start)) continue;
+      const group = new Set();
+      const pending = [start];
+      while (pending.length) {
+        const id = pending.pop();
+        if (group.has(id)) continue;
+        group.add(id);
+        seen.add(id);
+        for (const next of neighbors.get(id) || []) pending.push(next);
+      }
+      const remaining = [...group].filter(id => afterById.has(id)).map(id => afterById.get(id));
+      if (!remaining.length) continue;
+      const anchorY = Math.min(...[...group].map(id => {
+        const c = beforeById.get(id);
+        return Number(c?.ty ?? c?.y ?? 40);
+      }));
+      const groupLinks = links.filter(l => group.has(Number(l.f)) && group.has(Number(l.t)));
+      const laidOut = layoutTopicTree(remaining, groupLinks, {
+        ...opts,
+        orderOf: id => beforeById.get(id)?.ty ?? beforeById.get(id)?.y
+      }).positions;
+      const firstY = Math.min(...[...laidOut.values()].map(p => p.y));
+      for (const [id, p] of laidOut) {
+        const nextY = Math.round(anchorY + p.y - firstY);
+        if (Number(afterById.get(id).ty ?? afterById.get(id).y ?? 0) !== nextY) positions.set(id, nextY);
+      }
+    }
+    return positions;
   }
 
   function avoidOverlapDownTree({ cards = [], links = [], editedId = null, heightOf = null, widthOf = null, minGap = 16 } = {}) {
@@ -1335,7 +1389,7 @@
     stableBoardId, parseBoardMarkdown, reconcileBoards, serializeBoardMarkdown,
     shouldPersistIdea, KANBAN_STATUSES, kanbanStatusOf, sortIdeasForKanban,
     groupIdeasByKanban, shouldCarryIdea, isDueActive, mergeLinks, appendLink,
-    layoutTopicTree, avoidOverlapDownTree, isDailyFileName, parseDailyMarkdown, serializeDailyMarkdown, planLegacyMigration,
+    layoutTopicTree, reflowLinkedTopicTrees, avoidOverlapDownTree, isDailyFileName, parseDailyMarkdown, serializeDailyMarkdown, planLegacyMigration,
     calendarMonthGrid, DEV_AREA_NAMES, BOARD_KINDS, NEW_BOARD_KINDS, boardKindOf, devBoardAreas, rectAtPoint,
     placeCardInDevArea, isDevTaskCard, partitionDevAreaTasks, createUnifiedDevTask, assignCardToBoard,
     convertMasterAndSubtasksToUnifiedCards,
