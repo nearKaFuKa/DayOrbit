@@ -1,8 +1,12 @@
-# daydeck · 我的工作台
+# DayOrbit · 我的工作台
 
-> **English** · daydeck is a local-first personal workbench: a daily kanban for today's tasks, multi-project whiteboards with parent-child trees, and an inspiration/material library. No build step, no framework, no cloud — all data stays in plain Markdown/JSON files in a folder you choose, directly readable in Obsidian. Chinese UI. macOS & Windows (desktop Chrome/Edge).
+> **Think across projects. Focus on today.**
 
-本地优先的个人工作台：**今日待办看板 + 多项目白板 + 灵感素材库**。无构建、无框架、无 CDN、无云端——数据全部是明文 Markdown / JSON，存在你自己选择的文件夹里，Obsidian 可以直接打开阅读。
+为独立开发者打造的轻量级多项目工作台——**多项目管理 · 自由白板 · 每日聚焦**。
+
+核心理念：**多个项目持续运转，每天聚焦当下。** 项目白板让每个项目保持自己的拆解树与节奏，今日白板把当天的执行收拢到一页纸，素材库沉淀跨项目的灵感与参考资料。适合独立开发者与 Side Project 创作者。本地优先：无构建、无框架、无 CDN、无云端，数据全部是明文 Markdown / JSON，存在你自己选择的文件夹里，Obsidian 可以直接打开阅读。
+
+> **English** · DayOrbit is a lightweight multi-project workbench for indie developers and side-project makers: project whiteboards keep every project running, the daily board keeps you focused on today, and the material library collects inspiration across projects. Local-first — plain Markdown/JSON in a folder you choose, no build step, no cloud, Obsidian-friendly. Chinese UI. macOS & Windows (desktop Chrome/Edge).
 
 ## 功能一览
 
@@ -24,8 +28,8 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/nearKaFuKa/daydeck.git   # 或下载 zip 解压
-cd daydeck
+git clone https://github.com/nearKaFuKa/DayOrbit.git   # 或下载 zip 解压
+cd DayOrbit
 python3 src/workbench-server.py        # Windows: python src\workbench-server.py
 ```
 

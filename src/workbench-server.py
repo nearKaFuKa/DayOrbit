@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# 我的工作台（daydeck）· 本地静态服务（仅本机回环，无目录列表）
+# 我的工作台（DayOrbit）· 本地静态服务（仅本机回环，无目录列表）
 # 固定 localhost 来源，Chrome 对 localhost 的文件夹授权才能持久保留。
 # 用法：
 #   python src/workbench-server.py                 # 服务脚本所在的仓库根目录，端口 8765
@@ -59,5 +59,5 @@ if __name__ == '__main__':
         except Exception: pass
     root, port = resolve_root(), resolve_port()
     os.chdir(root)
-    print('[daydeck] serving %s at http://127.0.0.1:%d/%s' % (root, port, quote('工作台.html')))
+    print('[DayOrbit] serving %s at http://127.0.0.1:%d/%s' % (root, port, quote('工作台.html')))
     Server(('127.0.0.1', port), Handler).serve_forever()
